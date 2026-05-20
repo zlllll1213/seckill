@@ -1,0 +1,39 @@
+:root {
+  --el-color-primary: #e21d2b;
+  --el-color-primary-light-3: #ea5660;
+  --el-color-primary-light-5: #f38f96;
+  --el-color-primary-light-7: #fac8cc;
+  --el-color-primary-light-9: #fff0f1;
+  --el-color-primary-dark-2: #b91521;
+  --el-border-radius-base: 10px;
+}
+
+body {
+  color: #1f2937;
+  background: #f8fafc;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  width: min(1200px, 100%);
+}
+
+.el-card {
+  border: 1px solid rgba(31, 41, 55, 0.08);
+}
+
+.el-button {
+  font-weight: 650;
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #ff3b30 0%, #d71920 100%);
+  border-color: transparent;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: linear-gradient(135deg, #ff554d 0%, #e21d2b 100%);
+  border-color: transparent;
+}

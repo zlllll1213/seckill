@@ -1,0 +1,26 @@
+# macOS / IDE
+.DS_Store
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Java / Maven
+backend/target/
+*.class
+
+# Node / Vite / Electron
+frontend/node_modules/
+frontend/dist/
+frontend/dist-electron/
+frontend/.vite/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Runtime files
+*.pid
+*.tmp
