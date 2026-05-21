@@ -54,7 +54,7 @@ public class SecurityConfig {
                                         "script-src 'self'; " +
                                         "style-src 'self' 'unsafe-inline'; " +
                                         "img-src 'self' https: data:; " +
-                                        "connect-src 'self' http://localhost:5173 http://localhost:8080 ws://localhost:5173; " +
+                                        "connect-src 'self' http://localhost:5173 http://localhost:5174 http://127.0.0.1:5173 http://127.0.0.1:5174 http://localhost:8080 ws://localhost:5173 ws://localhost:5174 ws://127.0.0.1:5173 ws://127.0.0.1:5174; " +
                                         "font-src 'self' data:; " +
                                         "frame-ancestors 'none'"))
                         .frameOptions(frame -> frame.deny())
@@ -95,7 +95,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+            config.setAllowedOrigins(List.of(
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                    "http://localhost:5174",
+                    "http://127.0.0.1:5174"
+            ));
             config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             config.setAllowedHeaders(List.of("*"));
             config.setAllowCredentials(true);

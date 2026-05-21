@@ -1,10 +1,13 @@
 <template>
-  <div class="page">
+  <div class="page admin-page">
     <div class="page-header">
-      <h2>秒杀活动管理</h2>
+      <div>
+        <span class="section-code">FLASH OPS</span>
+        <h2>秒杀活动管理</h2>
+      </div>
       <el-button type="primary" @click="openDialog()">新增活动</el-button>
     </div>
-    <el-card class="table-card">
+    <el-card class="table-card" shadow="never">
       <el-table :data="activities" v-loading="loading" stripe>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="name" label="活动名称" min-width="160" />
@@ -99,8 +102,13 @@ onMounted(fetchActivities)
 </script>
 
 <style scoped>
-.page { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.admin-page { max-width: 1240px; margin: 0 auto; padding: 34px 24px 72px; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.table-card { border-radius: 8px; }
+.section-code { display: block; color: #ff3a32; font-size: 12px; font-weight: 900; margin-bottom: 9px; }
+h2 { color: var(--text); font-family: var(--font-display); font-size: 42px; font-weight: 900; line-height: 1; }
+.table-card { border-radius: 2px; }
 .dialog-alert { margin-bottom: 16px; }
+@media (max-width: 640px) {
+  .page-header { align-items: flex-start; flex-direction: column; gap: 14px; }
+}
 </style>

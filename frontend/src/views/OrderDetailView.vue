@@ -1,9 +1,9 @@
 <template>
-  <div class="page">
+  <div class="page order-detail-page">
     <el-button @click="$router.back()" class="back-btn">返回</el-button>
     <el-skeleton :loading="loading" animated :rows="5">
       <template #default>
-        <el-card v-if="order" class="detail-card">
+        <el-card v-if="order" class="detail-card" shadow="never">
           <template #header><span>订单详情</span></template>
           <el-descriptions :column="2" border>
             <el-descriptions-item label="订单ID">{{ order.id }}</el-descriptions-item>
@@ -45,7 +45,14 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.page { max-width: 700px; margin: 0 auto; padding: 24px; }
+.order-detail-page { max-width: 760px; margin: 0 auto; padding: 34px 24px 72px; }
 .back-btn { margin-bottom: 16px; }
-.detail-card { border-radius: 8px; }
+.detail-card { border-radius: 2px; }
+.detail-card :deep(.el-card__header) {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 900;
+  border-bottom-color: var(--line);
+}
 </style>

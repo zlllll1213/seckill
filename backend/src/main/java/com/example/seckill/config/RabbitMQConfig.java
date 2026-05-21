@@ -1,5 +1,6 @@
 package com.example.seckill.config;
 
+import com.example.seckill.common.SeckillLogger;
 import com.example.seckill.mq.SeckillMqFallbackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,15 +78,15 @@ public class RabbitMQConfig {
         template.setConfirmCallback((correlationData, ack, cause) -> {
             String id = correlationData == null ? null : correlationData.getId();
             if (ack) {
+                SeckillLogger.mqConfirmAck(id);
                 if (id != null) {
                     fallbackService.markDelivered(id);
                 }
                 return;
             }
-            log.error("[MQ] 消息发送未确认：correlationId={}, cause={}", id, cause);
+            SeckillLogger.mqConfirmNack(id, cause);
         });
-        template.setReturnsCallback(returned -> log.error(
-                "[MQ] 消息路由失败：replyCode={}, replyText={}, exchange={}, routingKey={}",
+        template.setReturnsCallback(returned -> SeckillLogger.mqReturn(
                 returned.getReplyCode(),
                 returned.getReplyText(),
                 returned.getExchange(),

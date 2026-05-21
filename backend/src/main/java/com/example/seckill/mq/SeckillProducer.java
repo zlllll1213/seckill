@@ -1,5 +1,6 @@
 package com.example.seckill.mq;
 
+import com.example.seckill.common.SeckillLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
@@ -39,14 +40,15 @@ public class SeckillProducer {
     }
 
     private void doSend(SeckillMessage msg) {
-        log.info("[SeckillProducer] 发送秒杀消息：activityId={}, userId={}",
-                msg.getActivityId(), msg.getUserId());
+        SeckillLogger.mqSend(msg.getActivityId(), msg.getUserId());
         CorrelationData correlationData = new CorrelationData(msg.getActivityId() + ":" + msg.getUserId());
         try {
             rabbitTemplate.convertAndSend(exchangeName, routingKey, msg, correlationData);
         } catch (AmqpException e) {
-            log.error("[SeckillProducer] 秒杀消息投递异常，已保留 fallback：activityId={}, userId={}",
+            log.error("[MQ-SEND] 秒杀消息投递异常，已保留 fallback：activityId={}, userId={}",
                     msg.getActivityId(), msg.getUserId(), e);
+            SeckillLogger.mqConfirmNack(
+                    msg.getActivityId() + ":" + msg.getUserId(), e.getMessage());
         }
     }
 
@@ -62,7 +64,7 @@ public class SeckillProducer {
                 fallbackService.delete(key);
                 continue;
             }
-            log.warn("[SeckillProducer] 重投 fallback 秒杀消息：key={}", key);
+            SeckillLogger.mqFallbackRetry(msg.getActivityId(), msg.getUserId(), key);
             doSend(msg);
         }
     }

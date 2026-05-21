@@ -20,11 +20,10 @@ const showNav = computed(() => !['login', 'register'].includes(route.name))
 </script>
 
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; }
-#app { min-height: 100vh; }
+* { margin: 0; padding: 0; }
+#app { min-height: 100vh; isolation: isolate; }
 .fade-slide-enter-active,
-.fade-slide-leave-active { transition: opacity 0.22s ease, transform 0.22s ease; }
-.fade-slide-enter-from { opacity: 0; transform: translateY(10px); }
-.fade-slide-leave-to { opacity: 0; transform: translateY(-8px); }
+.fade-slide-leave-active { transition: opacity 0.18s ease, transform 0.18s ease, filter 0.18s ease; }
+.fade-slide-enter-from { opacity: 0; transform: translateY(12px); filter: blur(5px); }
+.fade-slide-leave-to { opacity: 0; transform: translateY(-8px); filter: blur(3px); }
 </style>

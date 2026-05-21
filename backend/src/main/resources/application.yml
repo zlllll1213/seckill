@@ -85,6 +85,9 @@ seckill:
   stock-key-prefix: "seckill:stock:"
   user-mark-key-prefix: "seckill:user:"
   result-key-prefix: "seckill:result:"
+  token-key-prefix: "seckill:token:"
+  fallback-key-prefix: "seckill:fallback:"
   queue-name: seckill.order.queue
   exchange-name: seckill.exchange
   routing-key: seckill.order
+  order-timeout-minutes: 15

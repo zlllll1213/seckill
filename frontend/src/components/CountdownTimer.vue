@@ -76,9 +76,36 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.countdown { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; }
-.label { color: #909399; }
-.time { font-weight: bold; font-size: 20px; font-variant-numeric: tabular-nums; color: #409eff; }
-.urgent .time { color: #f56c6c; animation: pulse 1s infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 58, 50, 0.35);
+  background: rgba(226, 18, 24, 0.1);
+  box-shadow: inset 0 0 22px rgba(226, 18, 24, 0.12);
+}
+.label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.time {
+  min-width: 88px;
+  color: #ff4039;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: right;
+  text-shadow: 0 0 16px rgba(255, 58, 50, 0.54);
+  font-variant-numeric: tabular-nums;
+}
+.urgent .time {
+  animation: pulse 0.8s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.56; filter: brightness(1.8); }
+}
 </style>

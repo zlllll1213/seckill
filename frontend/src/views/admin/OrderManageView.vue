@@ -1,7 +1,8 @@
 <template>
-  <div class="page">
+  <div class="page admin-page">
+    <span class="section-code">ORDER OPS</span>
     <h2>订单管理</h2>
-    <el-card class="table-card">
+    <el-card class="table-card" shadow="never">
       <el-table :data="orders" v-loading="loading" stripe>
         <el-table-column prop="id" label="订单ID" width="100" />
         <el-table-column prop="userId" label="用户ID" width="100" />
@@ -53,8 +54,9 @@ onMounted(() => fetchOrders())
 </script>
 
 <style scoped>
-.page { max-width: 1200px; margin: 0 auto; padding: 24px; }
-h2 { margin-bottom: 20px; }
-.table-card { border-radius: 8px; }
+.admin-page { max-width: 1240px; margin: 0 auto; padding: 34px 24px 72px; }
+.section-code { display: block; color: #ff3a32; font-size: 12px; font-weight: 900; margin-bottom: 9px; }
+h2 { margin-bottom: 20px; color: var(--text); font-family: var(--font-display); font-size: 42px; font-weight: 900; line-height: 1; }
+.table-card { border-radius: 2px; }
 .pagination { margin-top: 20px; justify-content: center; display: flex; }
 </style>

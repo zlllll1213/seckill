@@ -2,6 +2,7 @@
   <div class="cart-page">
     <div class="cart-header">
       <div>
+        <span class="section-code">ORDER BUFFER</span>
         <h1>购物车</h1>
         <p>先把想买的商品放进来，后续可以继续扩展成真实结算流程。</p>
       </div>
@@ -68,8 +69,8 @@ function checkout() {
   min-height: calc(100vh - 72px);
   padding: 42px max(24px, calc((100vw - 1200px) / 2)) 72px;
   background:
-    radial-gradient(circle at 88% 12%, rgba(226, 29, 43, 0.1), transparent 28%),
-    linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+    radial-gradient(circle at 88% 12%, rgba(226, 18, 24, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
 }
 
 .cart-header {
@@ -81,17 +82,26 @@ function checkout() {
 }
 
 .cart-header h1 {
-  color: #172033;
-  font-size: 36px;
-  font-weight: 850;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 900;
   margin-bottom: 10px;
+}
+
+.section-code {
+  display: block;
+  color: #ff3a32;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 9px;
 }
 
 .cart-header p,
 .cart-summary p,
 .item-main p,
 .cart-empty p {
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .cart-layout {
@@ -110,9 +120,10 @@ function checkout() {
 .cart-summary,
 .cart-empty {
   border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 20px 58px rgba(31, 41, 55, 0.07);
+  border-color: var(--line);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-panel);
 }
 
 .cart-item {
@@ -127,18 +138,19 @@ function checkout() {
 .item-image-placeholder {
   width: 120px;
   height: 96px;
-  border-radius: 14px;
+  border-radius: 2px;
+  border: 1px solid var(--line);
 }
 
 .item-image-placeholder {
   display: grid;
   place-items: center;
-  color: #a6adbb;
-  background: #f1f5f9;
+  color: var(--muted);
+  background: #111315;
 }
 
 .item-main h2 {
-  color: #172033;
+  color: var(--text);
   font-size: 17px;
   margin-bottom: 8px;
 }
@@ -146,8 +158,9 @@ function checkout() {
 .item-main strong {
   display: inline-block;
   margin-top: 8px;
-  color: #e21d2b;
-  font-size: 20px;
+  color: #ff3a32;
+  font-family: var(--font-display);
+  font-size: 23px;
 }
 
 .cart-summary {
@@ -157,14 +170,15 @@ function checkout() {
 }
 
 .cart-summary span {
-  color: #6b7280;
+  color: var(--muted);
   font-weight: 650;
 }
 
 .cart-summary strong {
   display: block;
-  color: #e21d2b;
-  font-size: 34px;
+  color: #ff3a32;
+  font-family: var(--font-display);
+  font-size: 42px;
   margin: 12px 0 8px;
 }
 
@@ -183,7 +197,7 @@ function checkout() {
 }
 
 .empty-icon { font-size: 52px; }
-.cart-empty h2 { color: #172033; font-size: 24px; }
+.cart-empty h2 { color: var(--text); font-size: 24px; }
 
 @media (max-width: 760px) {
   .cart-page { min-height: calc(100vh - 120px); padding: 28px 18px 48px; }

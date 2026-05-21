@@ -1,39 +1,234 @@
 :root {
-  --el-color-primary: #e21d2b;
-  --el-color-primary-light-3: #ea5660;
-  --el-color-primary-light-5: #f38f96;
-  --el-color-primary-light-7: #fac8cc;
-  --el-color-primary-light-9: #fff0f1;
-  --el-color-primary-dark-2: #b91521;
-  --el-border-radius-base: 10px;
+  color-scheme: dark;
+  --bg: #060708;
+  --bg-2: #0b0d0f;
+  --panel: rgba(15, 17, 19, 0.92);
+  --panel-2: rgba(22, 24, 27, 0.86);
+  --line: rgba(255, 255, 255, 0.13);
+  --line-strong: rgba(255, 255, 255, 0.26);
+  --text: #f3f3ef;
+  --muted: #8d9299;
+  --muted-2: #b4b7bb;
+  --accent: #e21218;
+  --accent-hot: #ff3a32;
+  --accent-soft: rgba(226, 18, 24, 0.16);
+  --warning: #d69331;
+  --success: #31b36b;
+  --danger: #ff3a32;
+  --radius: 6px;
+  --shadow-red: 0 0 26px rgba(226, 18, 24, 0.35);
+  --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.38);
+  --font-body: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: "DIN Alternate", "Avenir Next Condensed", "Bahnschrift", "PingFang SC", sans-serif;
+
+  --el-color-primary: var(--accent);
+  --el-color-primary-light-3: #ef3c40;
+  --el-color-primary-light-5: #f2676a;
+  --el-color-primary-light-7: #f7999b;
+  --el-color-primary-light-9: rgba(226, 18, 24, 0.12);
+  --el-color-primary-dark-2: #b7080d;
+  --el-color-danger: var(--danger);
+  --el-border-radius-base: var(--radius);
+  --el-text-color-primary: var(--text);
+  --el-text-color-regular: var(--muted-2);
+  --el-text-color-secondary: var(--muted);
+  --el-border-color: var(--line);
+  --el-fill-color-blank: rgba(11, 13, 15, 0.96);
+  --el-bg-color: #101214;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
 }
 
 body {
-  color: #1f2937;
-  background: #f8fafc;
+  min-width: 320px;
+  color: var(--text);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 72% 0%, rgba(226, 18, 24, 0.14), transparent 34%),
+    radial-gradient(circle at 16% 28%, rgba(255, 255, 255, 0.07), transparent 22%),
+    #060708;
+  background-size: 36px 36px, 36px 36px, auto, auto, auto;
+  font-family: var(--font-body);
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(115deg, transparent 0 13px, rgba(226, 18, 24, 0.035) 13px 14px),
+    radial-gradient(circle at 50% 8%, rgba(255, 255, 255, 0.05), transparent 34%);
+  opacity: 0.82;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
 .page {
-  width: min(1200px, 100%);
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
 }
 
 .el-card {
-  border: 1px solid rgba(31, 41, 55, 0.08);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    var(--panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.el-card__body {
+  color: var(--text);
 }
 
 .el-button {
-  font-weight: 650;
+  min-height: 38px;
+  border-radius: 2px;
+  font-weight: 760;
+  letter-spacing: 0;
 }
 
-.el-button--primary {
-  background: linear-gradient(135deg, #ff3b30 0%, #d71920 100%);
-  border-color: transparent;
+.el-button--primary,
+.el-button--danger {
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent),
+    linear-gradient(135deg, #f2171d 0%, #9d060b 100%);
+  border-color: rgba(255, 58, 50, 0.9);
+  box-shadow: 0 10px 24px rgba(226, 18, 24, 0.24);
 }
 
 .el-button--primary:hover,
-.el-button--primary:focus {
-  background: linear-gradient(135deg, #ff554d 0%, #e21d2b 100%);
-  border-color: transparent;
+.el-button--primary:focus,
+.el-button--danger:hover,
+.el-button--danger:focus {
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent),
+    linear-gradient(135deg, #ff3535 0%, #c6080f 100%);
+  border-color: #ff3a32;
+}
+
+.el-button.is-text {
+  color: var(--muted-2);
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper,
+.el-input-number .el-input__wrapper {
+  color: var(--text);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.el-input__wrapper:hover,
+.el-select__wrapper:hover,
+.el-textarea__inner:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: none;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  color: var(--text);
+}
+
+.el-input__inner::placeholder,
+.el-textarea__inner::placeholder {
+  color: rgba(180, 183, 187, 0.58);
+}
+
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: rgba(255, 255, 255, 0.025);
+  --el-table-header-bg-color: rgba(226, 18, 24, 0.08);
+  --el-table-row-hover-bg-color: rgba(226, 18, 24, 0.12);
+  --el-table-border-color: var(--line);
+  --el-table-text-color: var(--muted-2);
+  --el-table-header-text-color: var(--text);
+  color: var(--muted-2);
+  background: transparent;
+}
+
+.el-table th.el-table__cell {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.el-table .el-table__cell {
+  border-bottom-color: var(--line);
+}
+
+.el-dialog {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: #0d0f11;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.52);
+}
+
+.el-dialog__title {
+  color: var(--text);
+  font-weight: 840;
+}
+
+.el-tabs__item {
+  color: var(--muted);
+  font-weight: 760;
+}
+
+.el-tabs__item.is-active {
+  color: var(--accent-hot);
+}
+
+.el-tabs__active-bar {
+  background-color: var(--accent);
+}
+
+.el-tag {
+  border-radius: 2px;
+  font-weight: 760;
+}
+
+.table-card,
+.command-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.table-card::before,
+.command-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 68%);
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .page {
+    width: min(100% - 28px, 1240px);
+  }
 }

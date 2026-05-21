@@ -7,10 +7,10 @@ import com.example.seckill.activity.service.ActivityService;
 import com.example.seckill.common.BusinessException;
 import com.example.seckill.common.ErrorCode;
 import com.example.seckill.common.HtmlSanitizer;
+import com.example.seckill.common.RedisKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -23,10 +23,7 @@ import java.util.List;
 public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityMapper activityMapper;
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    @Value("${seckill.stock-key-prefix}")
-    private String stockKeyPrefix;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     public List<SeckillActivity> listActivities() {
@@ -43,9 +40,9 @@ public class ActivityServiceImpl implements ActivityService {
             throw new BusinessException(ErrorCode.ACTIVITY_NOT_FOUND);
         }
         if (activity.getStatus() == 1) {
-            Object stock = redisTemplate.opsForValue().get(stockKeyPrefix + id);
+            String stock = stringRedisTemplate.opsForValue().get(RedisKeys.stockKey(id));
             if (stock != null) {
-                activity.setStock(Integer.parseInt(stock.toString()));
+                activity.setStock(Integer.parseInt(stock));
             }
         }
         return activity;
@@ -59,9 +56,9 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setUpdatedAt(LocalDateTime.now());
         activityMapper.insert(activity);
 
-        // 保存成功后，将库存同步初始化到 Redis，供秒杀 Lua 脚本原子扣减使用
-        String stockKey = stockKeyPrefix + activity.getId();
-        redisTemplate.opsForValue().set(stockKey, activity.getStock().toString());
+        // 保存成功后，将库存同步初始化到 Redis（纯 String，避免 JSON 序列化导致 Lua 解析失败）
+        String stockKey = RedisKeys.stockKey(activity.getId());
+        stringRedisTemplate.opsForValue().set(stockKey, activity.getStock().toString());
         log.info("[ActivityService] 初始化 Redis 库存：key={}, stock={}", stockKey, activity.getStock());
 
         return activity;

@@ -1,5 +1,7 @@
 package com.example.seckill.mq;
 
+import com.example.seckill.common.RedisKeys;
+import com.example.seckill.common.SeckillLogger;
 import com.example.seckill.order.entity.SeckillOrder;
 import com.example.seckill.order.service.OrderService;
 import com.example.seckill.seckill.metrics.SeckillMetrics;
@@ -8,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
@@ -26,16 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class SeckillConsumer {
 
     private final OrderService orderService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
     private final SeckillMetrics seckillMetrics;
-
-    private static final long RESULT_TTL_SECONDS = 300;
-
-    @Value("${seckill.result-key-prefix}")
-    private String resultKeyPrefix;
-
-    @Value("${seckill.stock-key-prefix}")
-    private String stockKeyPrefix;
 
     /**
      * 监听秒杀队列，手动 ACK 模式。
@@ -49,11 +43,8 @@ public class SeckillConsumer {
             throws IOException {
 
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
-        String resultKey = resultKeyPrefix + msg.getActivityId() + ":" + msg.getUserId();
-        String stockKey  = stockKeyPrefix + msg.getActivityId();
-
-        log.info("[SeckillConsumer] 收到秒杀消息：activityId={}, userId={}",
-                msg.getActivityId(), msg.getUserId());
+        String resultKey = RedisKeys.resultKey(msg.getActivityId(), msg.getUserId());
+        String stockKey  = RedisKeys.stockKey(msg.getActivityId());
 
         long start = System.currentTimeMillis();
         try {
@@ -71,36 +62,46 @@ public class SeckillConsumer {
             orderService.createOrder(order);
 
             // 3. 将结果 key 写为 orderId（前端轮询到非 "processing" 视为完成）
-            redisTemplate.opsForValue().set(resultKey, order.getId().toString(),
-                    RESULT_TTL_SECONDS, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(resultKey, order.getId().toString(),
+                    RedisKeys.RESULT_TTL_SECONDS, TimeUnit.SECONDS);
 
-            log.info("[SeckillConsumer] 建单成功：orderId={}", order.getId());
-            seckillMetrics.recordOrderLatency(System.currentTimeMillis() - start);
+            // 4. 【新增】订单超时追踪：将 orderId 写入 ZSet，score 为超时时间戳（ms）
+            long timeoutTs = Instant.now().toEpochMilli()
+                    + RedisKeys.ORDER_TIMEOUT_MINUTES * 60 * 1000L;
+            stringRedisTemplate.opsForZSet().add(RedisKeys.ORDER_TIMEOUT_KEY,
+                    order.getId().toString(), (double) timeoutTs);
 
-            // 4. 手动 ACK
+            long elapsedMs = System.currentTimeMillis() - start;
+            SeckillLogger.mqConsumeSuccess(msg.getActivityId(), msg.getUserId(),
+                    order.getId(), elapsedMs);
+            seckillMetrics.recordOrderLatency(elapsedMs);
+
+            // 5. 手动 ACK
             channel.basicAck(deliveryTag, false);
 
         } catch (DuplicateKeyException e) {
-            SeckillOrder existing = orderService.findByActivityAndUser(msg.getActivityId(), msg.getUserId());
-            if (existing != null) {
-                redisTemplate.opsForValue().set(resultKey, existing.getId().toString(),
-                        RESULT_TTL_SECONDS, TimeUnit.SECONDS);
-            }
-            log.warn("[SeckillConsumer] 重复投递，订单已存在：activityId={}, userId={}",
+            // 重复消费 → 幂等处理：查已存在的订单写回 Redis
+            SeckillOrder existing = orderService.findByActivityAndUser(
                     msg.getActivityId(), msg.getUserId());
+            if (existing != null) {
+                stringRedisTemplate.opsForValue().set(resultKey, existing.getId().toString(),
+                        RedisKeys.RESULT_TTL_SECONDS, TimeUnit.SECONDS);
+            }
+            SeckillLogger.mqRepeat(msg.getActivityId(), msg.getUserId(),
+                    existing != null ? existing.getId() : null);
             channel.basicAck(deliveryTag, false);
 
         } catch (Exception e) {
-            log.error("[SeckillConsumer] 建单失败，activityId={}, userId={}, error={}",
-                    msg.getActivityId(), msg.getUserId(), e.getMessage(), e);
+            SeckillLogger.mqConsumeFail(msg.getActivityId(), msg.getUserId(), e.getMessage());
 
-            // 5. 将结果 key 设为 "fail"，通知前端
-            redisTemplate.opsForValue().set(resultKey, "fail", RESULT_TTL_SECONDS, TimeUnit.SECONDS);
+            // 将结果 key 设为 "fail"，通知前端
+            stringRedisTemplate.opsForValue().set(resultKey, "fail",
+                    RedisKeys.RESULT_TTL_SECONDS, TimeUnit.SECONDS);
 
-            // 6. 回滚库存（+1）
-            redisTemplate.opsForValue().increment(stockKey);
+            // 回滚库存（+1）
+            stringRedisTemplate.opsForValue().increment(stockKey);
 
-            // 7. 拒绝消息并进入 DLQ，避免重入队死循环
+            // 拒绝消息并进入 DLQ，避免重入队死循环
             channel.basicReject(deliveryTag, false);
         }
     }

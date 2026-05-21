@@ -1,5 +1,6 @@
 package com.example.seckill.mq;
 
+import com.example.seckill.common.RedisKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SeckillMqFallbackService {
 
-    private static final String PREFIX = "seckill:fallback:";
+    private static final String PREFIX = RedisKeys.FALLBACK_PREFIX;
 
     private final RedisTemplate<String, Object> redisTemplate;
 

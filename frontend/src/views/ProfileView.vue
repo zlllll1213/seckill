@@ -2,6 +2,7 @@
   <div class="profile-page" :style="{ '--auth-bg': `url(${authBg})` }">
     <section class="profile-shell">
       <div class="profile-copy">
+        <span class="section-code">IDENTITY TERMINAL</span>
         <h1>个人中心</h1>
         <p>管理你的账号信息、订单入口和秒杀身份。登录后可以查看订单并参与秒杀活动。</p>
       </div>
@@ -39,7 +40,7 @@
           <el-button @click="openPasswordDialog">修改密码</el-button>
           <el-button type="primary" @click="router.push('/orders')">我的订单</el-button>
           <el-button v-if="userStore.isAdmin" @click="router.push('/admin/dashboard')">管理后台</el-button>
-          <el-button type="danger" text @click="handleLogout">退出登录</el-button>
+          <el-button :class="{ 'logout-action': userStore.isAdmin }" type="danger" text @click="handleLogout">退出登录</el-button>
         </div>
       </el-card>
 
@@ -288,7 +289,7 @@ onMounted(loadProfile)
   min-height: calc(100vh - 72px);
   padding: 64px max(24px, calc((100vw - 1200px) / 2));
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.86) 46%, rgba(255, 247, 247, 0.38) 100%),
+    linear-gradient(90deg, rgba(6, 7, 8, 0.98) 0%, rgba(6, 7, 8, 0.88) 52%, rgba(6, 7, 8, 0.58) 100%),
     var(--auth-bg) center center / cover no-repeat;
 }
 
@@ -299,27 +300,36 @@ onMounted(loadProfile)
   align-items: center;
 }
 
+.section-code {
+  display: block;
+  color: #ff3a32;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
 .profile-copy h1 {
-  color: #172033;
-  font-size: 44px;
-  font-weight: 880;
-  line-height: 1.08;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(48px, 8vw, 86px);
+  font-weight: 900;
+  line-height: 0.94;
   margin-bottom: 18px;
 }
 
 .profile-copy p {
   max-width: 500px;
-  color: #5e6678;
+  color: var(--muted-2);
   font-size: 17px;
   line-height: 1.8;
 }
 
 .profile-card,
 .auth-card {
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 28px 80px rgba(74, 25, 31, 0.13);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: rgba(10, 12, 14, 0.86);
+  box-shadow: var(--shadow-panel);
   backdrop-filter: blur(20px);
 }
 
@@ -340,23 +350,23 @@ onMounted(loadProfile)
   height: 78px;
   display: grid;
   place-items: center;
-  border-radius: 24px;
+  border-radius: 2px;
   color: #fff;
   font-size: 34px;
   font-weight: 850;
-  background: linear-gradient(135deg, #ff6a5f 0%, #d71920 100%);
-  box-shadow: 0 20px 42px rgba(215, 25, 32, 0.22);
+  background: linear-gradient(135deg, #ff3a32 0%, #9d060b 100%);
+  box-shadow: var(--shadow-red);
 }
 
 .profile-head h2 {
-  color: #172033;
+  color: var(--text);
   font-size: 26px;
   line-height: 1.2;
   margin-bottom: 6px;
 }
 
 .profile-head span {
-  color: #e21d2b;
+  color: #ff3a32;
   font-size: 14px;
   font-weight: 720;
 }
@@ -369,14 +379,14 @@ onMounted(loadProfile)
 
 .info-grid div {
   padding: 16px;
-  border-radius: 16px;
-  background: rgba(248, 250, 252, 0.78);
-  border: 1px solid rgba(226, 232, 240, 0.78);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
 }
 
 .info-grid label {
   display: block;
-  color: #8a93a5;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 720;
   margin-bottom: 8px;
@@ -384,24 +394,38 @@ onMounted(loadProfile)
 
 .info-grid strong {
   display: block;
-  color: #172033;
+  color: var(--text);
   font-size: 15px;
   line-height: 1.35;
   word-break: break-all;
 }
 
 .profile-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 24px;
+}
+
+.profile-actions :deep(.el-button) {
+  width: 100%;
+  height: 48px;
+  margin-left: 0;
+}
+
+.profile-actions :deep(.el-button + .el-button) {
+  margin-left: 0;
+}
+
+.logout-action {
+  grid-column: 1 / -1;
 }
 
 .submit-btn {
   width: 100%;
   height: 46px;
   margin-top: 6px;
-  border-radius: 14px;
+  border-radius: 2px;
 }
 
 .auth-card :deep(.el-tabs__item) {
@@ -412,16 +436,16 @@ onMounted(loadProfile)
 
 .auth-card :deep(.el-input__wrapper) {
   min-height: 44px;
-  border-radius: 13px;
+  border-radius: 2px;
 }
 
 .profile-dialog :deep(.el-dialog) {
-  border-radius: 20px;
+  border-radius: 2px;
 }
 
 .profile-dialog :deep(.el-input__wrapper) {
   min-height: 44px;
-  border-radius: 13px;
+  border-radius: 2px;
 }
 
 @media (max-width: 760px) {
@@ -429,7 +453,7 @@ onMounted(loadProfile)
     min-height: calc(100vh - 120px);
     padding: 34px 18px 48px;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.84) 54%, rgba(255, 247, 247, 0.72) 100%),
+      linear-gradient(180deg, rgba(6, 7, 8, 0.98) 0%, rgba(6, 7, 8, 0.86) 54%, rgba(6, 7, 8, 0.72) 100%),
       var(--auth-bg) 66% bottom / auto 74% no-repeat;
   }
   .profile-shell { grid-template-columns: 1fr; gap: 28px; }

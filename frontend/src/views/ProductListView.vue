@@ -1,5 +1,37 @@
 <template>
-  <div class="page product-list-page" :style="{ '--product-bg': `url(${heroImage})` }">
+  <div class="product-list-page" :style="{ '--product-bg': `url(${heroImage})` }">
+    <section class="market-hero">
+      <div class="hero-copy">
+        <span class="signal">LIVE MARKET / FLASH FORGE</span>
+        <h1>今日抢购</h1>
+        <p>把商品、库存和秒杀入口压进一块可扫描的交易台，所有关键动作都在第一屏完成。</p>
+      </div>
+      <div class="hero-timer">
+        <span>下一波流量窗口</span>
+        <strong>10:00</strong>
+        <em>库存脉冲已同步</em>
+      </div>
+    </section>
+
+    <section class="ops-strip">
+      <div>
+        <span>商品总数</span>
+        <strong>{{ total || products.length }}</strong>
+      </div>
+      <div>
+        <span>在售商品</span>
+        <strong>{{ activeCount }}</strong>
+      </div>
+      <div>
+        <span>库存池</span>
+        <strong>{{ stockPool }}</strong>
+      </div>
+      <div>
+        <span>检索命中</span>
+        <strong>{{ filteredProducts.length }}</strong>
+      </div>
+    </section>
+
     <div class="page-header">
       <div class="title-wrap">
         <span class="title-mark" aria-hidden="true"></span>
@@ -49,7 +81,7 @@
 import { computed, onMounted, ref, shallowRef } from 'vue'
 import { productApi } from '@/api'
 import ProductCard from '@/components/ProductCard.vue'
-import heroImage from '@/assets/images/generated/flash-sale-bg-v2.png'
+import heroImage from '@/assets/images/generated/trading-command-concept.png'
 
 const products = shallowRef([])
 const loading = ref(false)
@@ -63,6 +95,8 @@ const filteredProducts = computed(() => {
   if (!kw) return products.value
   return products.value.filter(p => String(p.name || '').toLowerCase().includes(kw))
 })
+const activeCount = computed(() => products.value.filter(p => p.status === 1).length)
+const stockPool = computed(() => products.value.reduce((sum, p) => sum + Number(p.stock || 0), 0))
 
 async function fetchProducts(page = 1) {
   loading.value = true
@@ -83,13 +117,124 @@ onMounted(() => fetchProducts())
 .product-list-page {
   width: 100%;
   max-width: none;
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - 64px);
   margin: 0;
-  padding: 46px max(32px, calc((100vw - 1200px) / 2)) 72px;
+  padding: 28px max(24px, calc((100vw - 1240px) / 2)) 72px;
+}
+
+.market-hero {
+  position: relative;
+  min-height: 275px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: end;
+  gap: 28px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  padding: 32px;
+  border: 1px solid var(--line-strong);
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.9) 35%, rgba(255, 250, 250, 0.48) 66%, rgba(255, 245, 245, 0.2) 100%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(248, 250, 252, 0.7) 100%),
-    var(--product-bg) center center / cover no-repeat;
+    linear-gradient(90deg, rgba(6, 7, 8, 0.96) 0%, rgba(6, 7, 8, 0.82) 52%, rgba(6, 7, 8, 0.42) 100%),
+    var(--product-bg) center / cover no-repeat;
+  box-shadow: var(--shadow-panel);
+}
+
+.market-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(110deg, transparent 0 18px, rgba(226, 18, 24, 0.08) 18px 19px);
+  pointer-events: none;
+}
+
+.hero-copy,
+.hero-timer {
+  position: relative;
+  z-index: 1;
+}
+
+.signal {
+  display: block;
+  color: #ff3a32;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.hero-copy h1 {
+  font-family: var(--font-display);
+  color: #fff;
+  font-size: clamp(54px, 8vw, 92px);
+  line-height: 0.92;
+  font-weight: 900;
+  text-shadow: 0 0 28px rgba(226, 18, 24, 0.32);
+}
+
+.hero-copy p {
+  max-width: 560px;
+  margin-top: 18px;
+  color: var(--muted-2);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.hero-timer {
+  padding: 22px;
+  border: 1px solid rgba(255, 58, 50, 0.42);
+  background: rgba(6, 7, 8, 0.72);
+  box-shadow: inset 0 0 28px rgba(226, 18, 24, 0.12);
+}
+
+.hero-timer span,
+.hero-timer em {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.hero-timer strong {
+  display: block;
+  margin: 9px 0;
+  color: #ff3a32;
+  font-family: var(--font-display);
+  font-size: 62px;
+  line-height: 1;
+  text-shadow: 0 0 26px rgba(255, 58, 50, 0.48);
+}
+
+.ops-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 30px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ops-strip div {
+  padding: 18px 22px;
+  border-right: 1px solid var(--line);
+}
+
+.ops-strip div:last-child {
+  border-right: 0;
+}
+
+.ops-strip span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.ops-strip strong {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 31px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
 }
 
 .page-header {
@@ -97,7 +242,7 @@ onMounted(() => fetchProducts())
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 72px;
+  margin-bottom: 24px;
 }
 
 .title-wrap {
@@ -109,38 +254,39 @@ onMounted(() => fetchProducts())
 .title-mark {
   width: 5px;
   height: 38px;
-  border-radius: 99px;
-  background: linear-gradient(180deg, #ff3b30 0%, #d71920 100%);
-  box-shadow: 0 12px 26px rgba(215, 25, 32, 0.28);
+  border-radius: 0;
+  background: #e21218;
+  box-shadow: 0 0 22px rgba(226, 18, 24, 0.44);
 }
 
 .page-header h2 {
-  color: #172033;
+  color: var(--text);
+  font-family: var(--font-display);
   font-size: 34px;
-  font-weight: 850;
+  font-weight: 900;
   letter-spacing: 0;
   line-height: 1.18;
 }
 
 .search-input {
   width: min(420px, 42vw);
-  --el-input-height: 48px;
+  --el-input-height: 44px;
 }
 
 .search-input :deep(.el-input__wrapper) {
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(225, 231, 240, 0.92);
-  box-shadow: 0 18px 45px rgba(143, 46, 46, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  box-shadow: none;
   backdrop-filter: blur(18px);
 }
 
 .search-input :deep(.el-input__inner) {
-  color: #172033;
+  color: var(--text);
   font-size: 15px;
 }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
 .product-skeleton { height: 292px; border-radius: 14px; }
 .pagination { margin-top: 24px; justify-content: center; display: flex; }
 
@@ -151,14 +297,14 @@ onMounted(() => fetchProducts())
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-left: clamp(120px, 20vw, 260px);
+  margin: 0 auto;
   padding: 26px 18px;
   text-align: center;
 }
 
 .empty-state p {
   margin: 18px 0 24px;
-  color: #172033;
+  color: var(--text);
   font-size: 23px;
   font-weight: 760;
   line-height: 1.2;
@@ -206,7 +352,7 @@ onMounted(() => fetchProducts())
 .refresh-button {
   min-width: 132px;
   height: 46px;
-  border-radius: 14px;
+  border-radius: 2px;
   font-size: 15px;
   font-weight: 740;
   box-shadow: 0 16px 34px rgba(215, 25, 32, 0.24);
@@ -216,10 +362,13 @@ onMounted(() => fetchProducts())
   .product-list-page {
     min-height: calc(100vh - 120px);
     padding: 28px 18px 48px;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.82) 50%, rgba(255, 247, 247, 0.68) 100%),
-      var(--product-bg) 65% bottom / auto 74% no-repeat;
   }
+  .market-hero { grid-template-columns: 1fr; min-height: 430px; padding: 22px; }
+  .hero-copy h1 { font-size: 54px; }
+  .hero-timer strong { font-size: 44px; }
+  .ops-strip { grid-template-columns: 1fr 1fr; }
+  .ops-strip div:nth-child(2n) { border-right: 0; }
+  .ops-strip div { padding: 14px; }
   .page-header { align-items: stretch; flex-direction: column; margin-bottom: 34px; }
   .page-header h2 { font-size: 28px; }
   .title-mark { height: 32px; }

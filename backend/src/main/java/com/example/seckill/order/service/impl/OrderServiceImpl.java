@@ -62,6 +62,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public SeckillOrder findOrderById(Long orderId) {
+        return orderMapper.selectById(orderId);
+    }
+
+    @Override
+    public SeckillOrder updateOrder(SeckillOrder order) {
+        if (order.getId() == null) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+        order.setUpdatedAt(LocalDateTime.now());
+        orderMapper.updateById(order);
+        return order;
+    }
+
+    @Override
     public List<SeckillOrder> listAllOrders() {
         return orderMapper.selectList(
                 new LambdaQueryWrapper<SeckillOrder>()

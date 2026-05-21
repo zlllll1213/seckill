@@ -26,7 +26,14 @@ public enum ErrorCode {
     ACTIVITY_ENDED(3003, "秒杀活动已结束"),
     SECKILL_STOCK_EMPTY(3004, "库存不足"),
     SECKILL_REPEAT(3005, "您已参与过该秒杀活动"),
-    SECKILL_PROCESSING(3006, "秒杀处理中，请稍候");
+    SECKILL_PROCESSING(3006, "秒杀处理中，请稍候"),
+    SECKILL_TOKEN_EMPTY(3007, "秒杀令牌已耗尽，请稍后再试"),
+    SECKILL_PREHEAT_REQUIRED(3008, "活动尚未预热，请联系管理员"),
+
+    // 订单相关
+    ORDER_NOT_FOUND(4001, "订单不存在"),
+    ORDER_STATUS_ERROR(4002, "订单状态异常"),
+    ORDER_TIMEOUT_CANCELLED(4003, "订单已超时取消");
 
     private final int code;
     private final String message;
